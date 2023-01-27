@@ -1,5 +1,6 @@
 import React from "react";
 import { Typography } from "@mui/material";
+import CopyrightIcon from '@mui/icons-material/Copyright';
 
 
 function MainFooter () {
@@ -9,7 +10,9 @@ function MainFooter () {
         align="center"
         p={1}
         mt={2}>
-            {"Developed with 🤍 by Ha Nguyen"}
+            {"CopyRight  "}
+            <CopyrightIcon fontSize="small"/>
+            {"2023"}
         </Typography>
     )
 };

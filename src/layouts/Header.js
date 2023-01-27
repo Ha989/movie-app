@@ -1,134 +1,198 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import * as React from "react";
+import { Link, useLocation } from "react-router-dom";
+import Toolbar from "@mui/material/Toolbar";
+import Box from "@mui/material/Box";
+import { useAuth } from "../contexts/AuthContext";
+import IconButton from "@mui/material/IconButton";
+import MoreIcon from "@mui/icons-material/MoreVert";
+import Menu from "@mui/material/Menu";
+import MovieIcon from '@mui/icons-material/Movie';
+import Button from "@mui/material/Button";
+import LiveTvIcon from '@mui/icons-material/LiveTv';
+import MenuItem from "@mui/material/MenuItem";
+import SearchAppBar from "../components/SearchAppBar";
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import StarIcon from "@mui/icons-material/Star";
+import AppBar from "@mui/material/AppBar";
 
-const pages = ['Movies', 'TV Shows'];
+export default function Header() {
+  let location = useLocation();
+  let auth = useAuth();
+  const [anchor, setAnchor] = React.useState(null);
+  const [mobileMoreAnchor, setMobileMoreAnchor] = React.useState(null);
 
-function Header() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const isMenuOpen = Boolean(anchor);
+  const isMobileMenuOpen = Boolean(mobileMoreAnchor);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
+  const handleProfileMenuOpen = (event) => {
+    setAnchor(event.currentTarget);
   };
-  
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchor(null);
   };
 
+  const handleClose = () => {
+    setAnchor(null);
+    handleMobileMenuClose();
+  };
+
+  const handleLogout = () => {
+    handleClose();
+    auth.signOut();
+  };
+
+  const handleMobileMenuOpen = (event) => {
+    setMobileMoreAnchor(event.currentTarget);
+  };
+
+  const menuId = "primary-menu";
+  const renderMenu = (
+    <Menu
+      anchor={anchor}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={menuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isMenuOpen}
+      onClose={handleClose}
+    >
+      {auth.user ? (
+        <>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/favorite"
+            onClick={handleClose}
+          >
+            {auth.user}
+          </Button>
+          <Button color="inherit" onClick={() => handleLogout()}>
+            Log Out</Button>
+        </>
+      ) : (
+        <Button
+          color="inherit"
+          component={Link}
+          to="/login"
+          state={{ backgroundLocation: location, from: location }}>Log In</Button>
+      )}
+    </Menu>
+  );
+
+  const mobileMenuId = "mobile-menu";
+  const renderMobileMenu = (
+    <Menu
+      anchor={mobileMoreAnchor}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}>
+
+      <MenuItem component={Link} to="/login">
+        <IconButton
+          size="large"
+          aria-label="account of current user"
+          aria-controls={menuId}
+          disableRipple={true}
+          color="inherit"
+          children={<PeopleAltIcon />}/>
+        <p>Profile</p>
+      </MenuItem>  
+
+      <MenuItem component={Link} to="/discovery/1">
+        <IconButton
+          size="large"
+          color="inherit"
+          disableRipple={true}
+          children={<MovieIcon />}
+        />
+        <p>Top Movie</p>
+      </MenuItem>
+
+      <MenuItem component={Link} to="/favorite">
+        <IconButton
+          size="large"
+          color="inherit"
+          disableRipple={true}
+          children={<StarIcon />}
+        />
+        <p>Favorite</p>
+      </MenuItem>
+    </Menu>
+  );
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl" >
-        <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static" className="app-bar">
+        <Toolbar>
+          <IconButton
+            size="large"
+            color="inherit"
+            component={Link}
+            to="/"
+            children={<LiveTvIcon />}
+          />
+          <p>MOVIE APP</p>
+          <SearchAppBar />
+          <Box sx={{ flexGrow: 1 }} />
+          <Box
             sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
+              display: { xs: "none", md: "flex" },
             }}
           >
-            
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+            <IconButton
+              component={Link}
+              to="/favorite"
+              size="large"
+              color="inherit"
+              children={<StarIcon />}
+            />
+            <IconButton
+              component={Link}
+              to="/discovery/1"
+              size="large"
+              color="inherit"
+              children={<MovieIcon />}
+            />
             <IconButton
               size="large"
               aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
+              aria-controls={menuId}
+              onClick={handleProfileMenuOpen}
+              color="inherit"
+              children={<PeopleAltIcon />}
+            />
+          </Box>
+          <Box sx={{ display: { xs: "flex", md: "none" } }}>
+            <IconButton
+              size="large"
+              aria-label="show more"
+              aria-controls={mobileMenuId}
+              onClick={handleMobileMenuOpen}
               color="inherit"
             >
-              <MenuIcon />
+              <MoreIcon />
             </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-          <Box sx={{ flexGrow: 1, display: "flex" , ml: { xs: 20, md: 120} }}>
-            <Button variant='contained'>
-                <Typography variant='h7'>
-                 Sign In
-                </Typography>
-            </Button>
-          </Box>
-
         </Toolbar>
-      </Container>
-    </AppBar>
+      </AppBar>
+      {renderMobileMenu}
+      {renderMenu}
+    </Box>
   );
 }
-export default Header;
